@@ -8,10 +8,11 @@ import compression from "compression";
 import helmet from "helmet";
 
 /**
- * Custome Modules
+ * Custom Modules
  */
 import config from "@/config";
 import limiter from "@/lib/express_rate_limit";
+import { connectToDatabase, disconnectFromDatabase } from "@/lib/mongoose";
 
 /**
  * Router
@@ -26,13 +27,14 @@ import type { CorsOptions } from "cors";
 /**
  * Express App Initialization
  */
-
 const app = express();
 
-//Configure CORS Options
+/**
+ * CORS Configuration
+ */
 const corsOptions: CorsOptions = {
     origin(origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
+        // Allow requests with no origin
         if (!origin) {
             return callback(null, true);
         }
@@ -50,56 +52,81 @@ const corsOptions: CorsOptions = {
     }
 }
 
-//Apply CORS Middleware
+/**
+ * Middleware Configuration
+ * Apply security and utility middleware to the Express app
+ */
+
+// Apply CORS middleware with custom configuration
 app.use(cors(corsOptions));
 
-//Enable JSON Request Body Parsing
+// Enable JSON request body parsing for API endpoints
 app.use(express.json());
 
+// Enable URL-encoded request body parsing
 app.use(express.urlencoded({extended: true}));
 
+// Parse cookies from incoming requests
 app.use(cookieParser());
 
+// Enable response compression for better performance
 app.use(compression(
     {
-        threshold:1024,
+        threshold: 1024, // Compress responses larger than 1KB
     }
 ));
 
+// Apply security headers using Helmet
 app.use(helmet());
 
+// Apply rate limiting to prevent abuse
 app.use(limiter);
 
+/**
+ * Server Startup
+ * Initialize the server and start listening for requests
+ */
+(async() => {
+    try {
+        await connectToDatabase();
+        // Mount API routes under /api/v1 prefix
+        app.use('/api/v1', v1Routes);
 
-(async()=>{
-    try{
-        
-        app.use('/api/v1',v1Routes)
-
+        // Start the server on the configured port
         app.listen(config.PORT, () => {
             console.log(`Server running: http://localhost:${config.PORT}`);
         });
     }
-    catch(err){
-        console.log('Failed to start the server', err)
+    catch(err) {
+        console.log('Failed to start the server', err);
 
-        if(config.NODE_ENV==='production'){
+        // Exit process in production if server fails to start
+        if(config.NODE_ENV === 'production') {
             process.exit(1);
         }
     }
 })();
 
-const handleServerShutdown = async ()=>{
-    try{
+/**
+ * Graceful Shutdown Handler
+ * Handle server shutdown signals to ensure clean termination
+ */
+const handleServerShutdown = async () => {
+    try {
+        await disconnectFromDatabase();
         console.log('Server Shutdown');
         process.exit(0);
     }   
-    catch(err){
-        console.log('Error during Server Shutdown', err)
+    catch(err) {
+        console.log('Error during Server Shutdown', err);
     } 
 }
 
+// Listen for termination signals to handle graceful shutdown
 process.on('SIGTERM', handleServerShutdown);
-process.on('SIGINT', handleServerShutdown)
+process.on('SIGINT', handleServerShutdown);
 
+/**
+ * Export the Express app for testing or external use
+ */
 export default app;
