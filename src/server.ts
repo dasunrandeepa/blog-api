@@ -8,10 +8,15 @@ import compression from "compression";
 import helmet from "helmet";
 
 /**
- * Config
+ * Custome Modules
  */
 import config from "@/config";
 import limiter from "@/lib/express_rate_limit";
+
+/**
+ * Router
+ */
+import v1Routes from "@/routes/v1";
 
 /**
  * Types
@@ -69,11 +74,8 @@ app.use(limiter);
 (async()=>{
     try{
         
-        app.get("/", (req, res) => {
-            res.json({
-                message: "Hello World",
-            });
-        });
+        app.use('/api/v1',v1Routes)
+
         app.listen(config.PORT, () => {
             console.log(`Server running: http://localhost:${config.PORT}`);
         });
