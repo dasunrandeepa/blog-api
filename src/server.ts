@@ -65,14 +65,15 @@ app.use(helmet());
 
 app.use(limiter);
 
+
 (async()=>{
     try{
+        
         app.get("/", (req, res) => {
             res.json({
                 message: "Hello World",
             });
         });
-        
         app.listen(config.PORT, () => {
             console.log(`Server running: http://localhost:${config.PORT}`);
         });
@@ -81,9 +82,9 @@ app.use(limiter);
         console.log('Failed to start the server', err)
 
         if(config.NODE_ENV==='production'){
-            process.exit(1)
+            process.exit(1);
         }
     }
-});
+})();
 
 export default app;
