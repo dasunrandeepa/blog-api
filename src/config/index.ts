@@ -11,6 +11,7 @@ const config = {
     NODE_ENV: process.env.NODE_ENV || "development",
     WHITELIST_ORIGINS: ['http://localhost:3001'],
     MONGO_URI: process.env.MONGO_URI,
+    LOG_LEVEL: process.env.LOG_LEVEL || 'info'
 }
 
 export default config;
