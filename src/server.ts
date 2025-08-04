@@ -13,6 +13,7 @@ import helmet from "helmet";
 import config from "@/config";
 import limiter from "@/lib/express_rate_limit";
 import { connectToDatabase, disconnectFromDatabase } from "@/lib/mongoose";
+import { logger } from "@/lib/winston";
 
 /**
  * Router
@@ -45,7 +46,7 @@ const corsOptions: CorsOptions = {
         }
         
         // Reject requests from non-whitelist origins
-        console.log(`CORS Error: ${origin} is not allowed`);
+        logger.warn(`CORS Error: ${origin} is not allowed`);
         return callback(
             new Error(`CORS Error: ${origin} is not allowed by CORS`)
         );
@@ -94,11 +95,11 @@ app.use(limiter);
 
         // Start the server on the configured port
         app.listen(config.PORT, () => {
-            console.log(`Server running: http://localhost:${config.PORT}`);
+            logger.info(`Server running: http://localhost:${config.PORT}`);
         });
     }
     catch(err) {
-        console.log('Failed to start the server', err);
+        logger.error('Failed to start the server', err);
 
         // Exit process in production if server fails to start
         if(config.NODE_ENV === 'production') {
@@ -114,11 +115,11 @@ app.use(limiter);
 const handleServerShutdown = async () => {
     try {
         await disconnectFromDatabase();
-        console.log('Server Shutdown');
+        logger.warn('Server Shutdown');
         process.exit(0);
     }   
     catch(err) {
-        console.log('Error during Server Shutdown', err);
+        logger.error('Error during Server Shutdown', err);
     } 
 }
 

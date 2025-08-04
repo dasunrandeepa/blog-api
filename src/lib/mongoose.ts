@@ -7,6 +7,7 @@ import mongoose from "mongoose";
  * Custom Modules
  */
 import config from "@/config";
+import { logger } from "@/lib/winston";
 
 /**
  * Types
@@ -34,7 +35,7 @@ export const connectToDatabase = async(): Promise<void> => {
     try {
         await mongoose.connect(config.MONGO_URI, clientOptions);
 
-        console.log('Database Connected Successfully.', {
+        logger.info('Database Connected Successfully.', {
             uri: config.MONGO_URI,
             options: clientOptions
         })
@@ -43,7 +44,7 @@ export const connectToDatabase = async(): Promise<void> => {
         throw err;
      }
 
-     console.log('Error connecting to Database',err)
+     logger.error('Error connecting to Database',err)
     }
 };
 
