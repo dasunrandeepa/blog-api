@@ -8,6 +8,11 @@ import { version } from "os";
 const router = Router();
 
 /**
+ * Routes
+ */
+import authRoutes from '@/routes/v1/auth'
+
+/**
  * Root route
  */
 router.get('/',(req, res)=>{
@@ -21,5 +26,10 @@ router.get('/',(req, res)=>{
         }
     );
 });
+
+/**
+ * Mount auth routes
+ */
+router.use('/auth', authRoutes);
 
 export default router;
