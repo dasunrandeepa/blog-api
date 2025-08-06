@@ -12,7 +12,6 @@ import config from "@/config";
  * Types
  */
 import { Types } from 'mongoose';
-import { access } from "fs";
 
 export const generateAccessToken = (userId: Types.ObjectId): string => {
     return jwt.sign({userId}, config.JWT_ACCESS_SECRET, {
