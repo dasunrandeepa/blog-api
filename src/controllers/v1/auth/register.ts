@@ -21,12 +21,24 @@ type UserData = Pick<IUser, 'email'| 'password' | 'role'>
 const register = async (req: Request, res: Response): Promise<void> => {
     const { email, password, role } = req.body as UserData;
 
-    console.log(email, password, role);
-
     try {
-        res.status(201).json({
-            message: 'New User Created',
+        const username = genUsername();
 
+        const newUser = await User.create({
+            username,
+            email,
+            password,
+            role,
+        });
+
+        //Generate access token and refresh token for new user
+
+        res.status(201).json({
+            user: {
+                username: newUser.username,
+                email: newUser.email,
+                role: newUser.role,
+            },
         });
     } catch (err) {
         res.status(500).json({
