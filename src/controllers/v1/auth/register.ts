@@ -24,7 +24,7 @@ type UserData = Pick<IUser, 'email'| 'password' | 'role'>
 const register = async (req: Request, res: Response): Promise<void> => {
     const { email, password, role } = req.body as UserData;
 
-    if (role == 'admin' && !config.WHITELIST_ADMINS_MAIL?.includes(email)) {
+    if (role == 'admin' && !config.WHITELIST_ADMINS_MAIL.includes(email)) {
         res.status(403).json({
             code: 'AuthorizationError',
             message: 'You cannot register as an admin.',
