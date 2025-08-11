@@ -64,7 +64,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
             accessToken,
         });
 
-        logger.info('User Registered Successfully', {
+        logger.info('User logged in successfully', {
             username: user.username,
             email: user.email,
             role: user.role,
@@ -76,7 +76,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
             error: err
         })
 
-        logger.error('Error during user registration.', err);
+        logger.error('Error during user login.', err);
     }
 }
 
