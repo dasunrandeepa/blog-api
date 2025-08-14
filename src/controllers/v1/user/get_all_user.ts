@@ -21,7 +21,7 @@ const getAllUser = async (req: Request,  res: Response): Promise<void> => {
         const total = await User.countDocuments();
 
         const users = await User.find()
-        .select('__v')
+        .select('-__v')
         .limit(limit)
         .skip(offset)
         .lean()
