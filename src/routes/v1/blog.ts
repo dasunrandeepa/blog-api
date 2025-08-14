@@ -18,6 +18,7 @@ import uploadBlogBanner from "@/middlewares/uploadBlogBanner";
  */
 import createBlog from "@/controllers/v1/blog/create_blog"
 import getAllBlogs from "@/controllers/v1/blog/get_all_blogs";
+import getBlogsByUser from "@/controllers/v1/blog/get_blogs_by_user";
 
 
 const upload = multer();
@@ -61,6 +62,26 @@ router.get(
         .withMessage('Offset must be greater than 0.'),
     validationError,
     getAllBlogs
+);
+
+router.get(
+    '/user/:userId',
+    authenticate,
+    authorize(['admin', 'user']),
+    param('userId')
+        .notEmpty()
+        .isMongoId()
+        .withMessage('Invalid user ID.'),
+    query('limit')
+        .optional()
+        .isInt({ min: 1, max: 50})
+        .withMessage('Limit must be between 1 and 50.'),
+    query('offset')
+        .optional()
+        .isInt({ min: 0})
+        .withMessage('Offset must be greater than 0.'),
+    validationError,
+    getBlogsByUser
 );
 
 export default router;
