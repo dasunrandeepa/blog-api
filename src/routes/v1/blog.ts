@@ -17,6 +17,7 @@ import uploadBlogBanner from "@/middlewares/uploadBlogBanner";
  * Controllers
  */
 import createBlog from "@/controllers/v1/blog/create_blog"
+import getAllBlogs from "@/controllers/v1/blog/get_all_blogs";
 
 
 const upload = multer();
@@ -44,6 +45,22 @@ router.post('/',
     validationError,
     uploadBlogBanner('post'),
     createBlog
+);
+
+router.get(
+    '/',
+    authenticate,
+    authorize(['admin', 'user']),
+    query('limit')
+        .optional()
+        .isInt({ min: 1, max: 50})
+        .withMessage('Limit must be between 1 and 50.'),
+    query('offset')
+        .optional()
+        .isInt({ min: 0})
+        .withMessage('Offset must be greater than 0.'),
+    validationError,
+    getAllBlogs
 );
 
 export default router;
