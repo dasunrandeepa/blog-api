@@ -20,6 +20,7 @@ import createBlog from "@/controllers/v1/blog/create_blog"
 import getAllBlogs from "@/controllers/v1/blog/get_all_blogs";
 import getBlogsByUser from "@/controllers/v1/blog/get_blogs_by_user";
 import getBlogBySlug from "@/controllers/v1/blog/get_blog_by_slug";
+import updateBlog from "@/controllers/v1/blog/update_blog";
 
 
 const upload = multer();
@@ -94,6 +95,28 @@ router.get(
         .withMessage('Slug is required.'),
     validationError,
     getBlogBySlug
+);
+
+router.put('/:blogId',
+    authenticate,
+    authorize(['admin']),
+    param('blogId')
+        .notEmpty()
+        .isMongoId()
+        .withMessage('Invalid blog ID.'),
+    upload.single('banner_image'),
+    body('title')
+        .optional()
+        .isLength({ max: 180 })
+        .withMessage('Title must be less than 180 characters'), 
+    body('content'),
+    body('status')
+        .optional()
+        .isIn(['draft', 'published'])
+        .withMessage('Status must be one of the value, draft or published'),
+    validationError,
+    uploadBlogBanner('put'),
+    updateBlog
 )
 
 export default router;
