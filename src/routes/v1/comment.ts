@@ -15,6 +15,7 @@ import validationError from "@/middlewares/validationError";
  * Controllers
  */
 import commentBlog from "@/controllers/v1/comment/comment_blog";
+import getCommentsByBlog from "@/controllers/v1/comment/get_comments_by_blog";
 
 
 const router = Router();
@@ -35,7 +36,17 @@ router.post(
         .withMessage('Comment content must be between 1 and 1000 characters.'),
     validationError,
     commentBlog
-)
+);
 
+router.get(
+    '/blog/:blogId',
+    authenticate,
+    authorize(['user', 'admin']),
+    param('blogId')
+        .isMongoId()
+        .withMessage('Invalid blog ID.'),
+    validationError,
+    getCommentsByBlog
+);
 
 export default router;
