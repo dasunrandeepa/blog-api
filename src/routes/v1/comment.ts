@@ -16,7 +16,7 @@ import validationError from "@/middlewares/validationError";
  */
 import commentBlog from "@/controllers/v1/comment/comment_blog";
 import getCommentsByBlog from "@/controllers/v1/comment/get_comments_by_blog";
-
+import deleteComment from "@/controllers/v1/comment/delete_comment";
 
 const router = Router();
 
@@ -48,5 +48,16 @@ router.get(
     validationError,
     getCommentsByBlog
 );
+
+router.delete(
+    '/:commentId',
+    authenticate,
+    authorize(['user', 'admin']),
+    param('commentId')
+        .isMongoId()
+        .withMessage('Invalid comment ID.'),
+    validationError,
+    deleteComment
+)
 
 export default router;
