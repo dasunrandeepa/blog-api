@@ -19,6 +19,7 @@ import uploadBlogBanner from "@/middlewares/uploadBlogBanner";
 import createBlog from "@/controllers/v1/blog/create_blog"
 import getAllBlogs from "@/controllers/v1/blog/get_all_blogs";
 import getBlogsByUser from "@/controllers/v1/blog/get_blogs_by_user";
+import getBlogBySlug from "@/controllers/v1/blog/get_blog_by_slug";
 
 
 const upload = multer();
@@ -83,5 +84,16 @@ router.get(
     validationError,
     getBlogsByUser
 );
+
+router.get(
+    '/:slug',
+    authenticate,
+    authorize(['admin', 'user']),
+    param('slug')
+        .notEmpty()
+        .withMessage('Slug is required.'),
+    validationError,
+    getBlogBySlug
+)
 
 export default router;
